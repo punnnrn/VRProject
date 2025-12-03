@@ -13,8 +13,12 @@ public class KeypadControl : MonoBehaviour
     [SerializeField] private float displayReset = 2f;
     [SerializeField] private string successText;
 
-    [SerializeField] GameObject door;
-    float destroyCooldown = 5f;
+    public Animator DoorAnimator;
+
+    public UnityEvent onDoorOpen;
+    public UnityEvent onDoorClose;
+
+    private bool isDoorOpened;
 
     public UnityEvent onCorrectPassword;
     public UnityEvent onInCorrectPassword;
@@ -24,7 +28,7 @@ public class KeypadControl : MonoBehaviour
 
     public bool HasUsedCorrectCode {  get { return hasUsedCorrectCode; } }
 
-    public void UserNumerEntry(int selectedNum)
+    public void UserNumberEntry(int selectedNum)
     {
         if (inputPasswordList.Count >= 4)
             return;
@@ -86,7 +90,7 @@ public class KeypadControl : MonoBehaviour
             hasUsedCorrectCode = true;
             codeDisplay.text = successText;
 
-            Destroy(door, destroyCooldown);
+            Open();
         }
     }
     
@@ -102,5 +106,19 @@ public class KeypadControl : MonoBehaviour
 
         inputPasswordList.Clear();
         codeDisplay.text = "Wrong Password!";
-    }    
+    }
+
+    void Open()
+    {
+        DoorAnimator.Play("Open");
+        isDoorOpened = true;
+        onDoorOpen?.Invoke();
+    }
+
+    void Close()
+    {
+        DoorAnimator.Play("Close");
+        isDoorOpened = false;
+        onDoorClose?.Invoke();
+    }
 }

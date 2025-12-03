@@ -1,4 +1,6 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UIElements;
 
 public class Stage1Manager : MonoBehaviour
@@ -7,9 +9,12 @@ public class Stage1Manager : MonoBehaviour
     public static bool isGreen;
     public static bool isBlue;
 
-    public GameObject Door;
+    public Animator DoorAnimator;
 
-    float destroyCooldown = 5f;
+    public UnityEvent onDoorOpen;
+    public UnityEvent onDoorClose;
+
+    private bool isDoorOpened = false;
 
     [SerializeField] private bool currentRed = false;
     [SerializeField] private bool currentGreen =false;
@@ -17,7 +22,7 @@ public class Stage1Manager : MonoBehaviour
 
     private void Start()
     {
-        
+        isDoorOpened = false;
     }
 
     // Update is called once per frame
@@ -29,8 +34,31 @@ public class Stage1Manager : MonoBehaviour
 
        if (currentRed == true && currentGreen == true && currentBlue == true)
         {
-            Destroy(Door ,destroyCooldown);
+            if (!isDoorOpened)
+            {
+                Open();
+            }
         }
-        else { }
+        else
+        {
+            if (isDoorOpened)
+            {
+                Close();
+            }
+        }
+
+    void Open()
+        {
+            DoorAnimator.Play("Open");
+            isDoorOpened = true;
+            onDoorOpen?.Invoke();
+        }
+
+    void Close()
+        {
+            DoorAnimator.Play("Close");
+            isDoorOpened = false;
+            onDoorClose?.Invoke();
+        }
     }
 }
